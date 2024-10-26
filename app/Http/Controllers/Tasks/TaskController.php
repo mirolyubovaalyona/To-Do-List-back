@@ -12,44 +12,49 @@ class TaskController extends Controller
 {
     public function index()
     {
-       
-        Auth::user()->tasks;
         return  Auth::user()->tasks;
+    }
+
+    public function create(Request $request, Task $task)
+    {
+        // create
     }
 
     public function store(Request $request)
     {
         $validator =  Validator::make($request->all(),[
-            'title' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
         ]);
-        
+
         if($validator->fails()){
             return  response()->json(['Validation Error.', $validator->errors()]);    
         }
-
-        $task = Auth::user()->tasks->create([
-            $request->all()
-        ]);
-
-        $user = Auth::user();
-        $Task = Task::create($request->all());
         
-        return  response()->json($task, 201);
+        $task = Auth::user()->tasks()->create([
+            'name' => $request->name,
+        ]);
+        
+
+        return response()->json($task, 201);
+    }
+
+    public function show($id)
+    {
+        // create
+    }
+
+    public function edit($id)
+    {
+        // create
     }
 
     public function update(Request $request, Task $task)
     {
-        // $this->authorize('update', $task);
-
-        // $task->update($request->all());
-        // return response()->json($task);
+     
     }
 
     public function destroy(Task $task)
     {
-        // $this->authorize('delete', $task);
-
-        // $task->delete();
-        // return response()->json(['message' => 'Task deleted']);
+        
     }
 }
