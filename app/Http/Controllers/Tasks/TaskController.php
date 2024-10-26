@@ -53,8 +53,10 @@ class TaskController extends Controller
      
     }
 
-    public function destroy(Task $task)
+    public function destroy($id)
     {
-        
+        $task = Auth::user()->tasks()->findOrFail($id);
+        $task->delete();
+        return response()->json('sucsess', 200);
     }
 }
