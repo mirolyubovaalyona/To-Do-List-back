@@ -13,7 +13,8 @@ class TaskController extends Controller
 {
     public function index()
     {
-        return  Auth::user()->tasks;
+        $tasks = Auth::user()->tasks()->with('tags')->get();
+        return response()->json($tasks);
     }
 
     public function store(Request $request)
@@ -28,6 +29,8 @@ class TaskController extends Controller
             'end_date' => 'nullable|date|after_or_equal:today|after_or_equal:start_date|prohibited_unless:type,date_range',
             'days_of_week' => 'nullable|json|prohibited_unless:type,weekly',
             'time' => 'nullable|date_format:H:i',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
         ]);
 
 
@@ -51,13 +54,16 @@ class TaskController extends Controller
         
         $task = Auth::user()->tasks()->create($validatedData);
         
+        if (isset($validatedData['tags'])) {
+            $task->tags()->sync($validatedData['tags']);
+        }
 
         return response()->json($task, 201);
     }
 
     public function show($id)
     {
-        $task = Auth::user()->tasks()->find($id);
+        $task = Auth::user()->tasks()->with('tags')->find($id);
 
         if (is_null($task)) {
             return response()->json('not found task', 404);;
@@ -85,6 +91,8 @@ class TaskController extends Controller
             'end_date' => 'sometimes|date|after_or_equal:today|after_or_equal:start_date',
             'days_of_week' => 'sometimes|json',
             'time' => 'sometimes|date_format:H:i',
+            'tags' => 'sometimes|array',
+            'tags.*' => 'exists:tags,id',
         ]);
 
         if($validator->fails()){
@@ -114,6 +122,10 @@ class TaskController extends Controller
         }
 
         $task->update($validatedData);
+
+        if (isset($validatedData['tags'])) {
+            $task->tags()->sync($validatedData['tags']);
+        }
    
         return response()->json($task, 201);
     }

@@ -79,4 +79,17 @@ class TagController extends Controller
         $tag->delete();
         return response()->json('sucsess', 200);
     }
+
+    //вывод всех задач данного тега
+    public function tasks($id)
+    {
+        $tag = Auth::user()->tags()->with('tasks')->find($id);
+
+        if (is_null($tag)) {
+            return response()->json(['error' => 'Tag not found'], 404);
+        }
+
+        // Вернуть задачи, связанные с данным тегом
+        return response()->json($tag->tasks, 200);
+    }
 }

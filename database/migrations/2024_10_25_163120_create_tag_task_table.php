@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('task_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['task_id', 'tag_id']);
         });
     }
 
