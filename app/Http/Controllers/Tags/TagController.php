@@ -89,7 +89,6 @@ class TagController extends Controller
             return response()->json(['error' => 'Tag not found'], 404);
         }
 
-        // Вернуть задачи, связанные с данным тегом
         return response()->json($tag->tasks, 200);
     }
 }

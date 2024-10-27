@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tasks/{id}', [TaskController::class, 'show']);
     Route::patch('/tasks/{id}', [TaskController::class, 'update']);
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+    Route::get('/tasks/priority/{priority}', [TaskController::class, 'tasksByPriority']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

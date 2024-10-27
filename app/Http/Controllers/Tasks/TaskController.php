@@ -139,4 +139,16 @@ class TaskController extends Controller
         $task->delete();
         return response()->json('sucsess', 200);
     }
+
+     // Получить все задачи с данным приоритетом 
+    public function tasksByPriority($priority)
+    {
+        $tasks = Auth::user()->tasks()->where('priority', $priority)->with('tags')->get();
+
+        if ($tasks->isEmpty()) {
+            return response()->json(['error' => 'No tasks found with this priority'], 404);
+        }
+
+        return response()->json($tasks, 200);
+    }
 }
