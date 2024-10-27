@@ -28,4 +28,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tags/{id}', [TagController::class, 'show']);
     Route::patch('/tags/{id}', [TagController::class, 'update']);
     Route::delete('/tags/{id}', [TagController::class, 'destroy']);
+    Route::get('/tags/{id}/tasks', [TagController::class, 'tasks']);
 });
