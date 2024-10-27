@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\Tags\TagController;
 use App\Http\Controllers\Tasks\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,4 +20,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tasks/{id}', [TaskController::class, 'show']);
     Route::patch('/tasks/{id}', [TaskController::class, 'update']);
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/tags', [TagController::class, 'index']);
+    Route::post('/tags', [TagController::class, 'store']);
+    Route::get('/tags/{id}', [TagController::class, 'show']);
+    Route::patch('/tags/{id}', [TagController::class, 'update']);
+    Route::delete('/tags/{id}', [TagController::class, 'destroy']);
 });
