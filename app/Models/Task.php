@@ -16,7 +16,6 @@ class Task extends Model
         'start_date',
         'end_date',
         'days_of_week',
-        'daily',
         'time',
         'is_completed',
     ];

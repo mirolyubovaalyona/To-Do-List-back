@@ -22,7 +22,6 @@ return new class extends Migration
             $table->date('start_date')->nullable(); 
             $table->date('end_date')->nullable(); 
             $table->json('days_of_week')->nullable(); 
-            $table->date('daily')->nullable(); 
             $table->timeTz('time')->nullable(); 
             $table->boolean('is_completed')->default(0);;
             $table->timestamps();
