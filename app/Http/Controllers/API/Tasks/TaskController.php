@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tasks;
+namespace App\Http\Controllers\API\Tasks;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -61,9 +61,9 @@ class TaskController extends Controller
         return response()->json($task, 201);
     }
 
-    public function show($id)
+    public function show($task_id)
     {
-        $task = Auth::user()->tasks()->with('tags')->find($id);
+        $task = Auth::user()->tasks()->with('tags')->find($task_id);
 
         if (is_null($task)) {
             return response()->json('not found task', 404);;
@@ -73,9 +73,9 @@ class TaskController extends Controller
     }
 
    
-    public function update(Request $request, $id)
+    public function update(Request $request, $task_id)
     {
-        $task = Auth::user()->tasks()->find($id);
+        $task = Auth::user()->tasks()->find($task_id);
 
         if (is_null($task)) {
             return response()->json('not found task', 404);;
@@ -93,6 +93,7 @@ class TaskController extends Controller
             'time' => 'sometimes|date_format:H:i',
             'tags' => 'sometimes|array',
             'tags.*' => 'exists:tags,id',
+            'is_completed' => 'sometimes|integer|min:0|max:1',
         ]);
 
         if($validator->fails()){
@@ -130,9 +131,9 @@ class TaskController extends Controller
         return response()->json($task, 201);
     }
 
-    public function destroy($id)
+    public function destroy($task_id)
     {
-        $task = Auth::user()->tasks()->find($id);
+        $task = Auth::user()->tasks()->find($task_id);
         if (is_null($task)) {
             return response()->json('not found task', 404);;
         }

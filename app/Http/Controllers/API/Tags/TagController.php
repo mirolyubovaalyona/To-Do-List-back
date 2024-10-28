@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tags;
+namespace App\Http\Controllers\API\Tags;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -34,9 +34,9 @@ class TagController extends Controller
         return response()->json($tag, 201);
     }
 
-    public function show($id)
+    public function show($tag_id)
     {
-        $tag = Auth::user()->tags()->find($id);
+        $tag = Auth::user()->tags()->find($tag_id);
 
         if (is_null($tag)) {
             return response()->json('not found tag', 404);;
@@ -46,9 +46,9 @@ class TagController extends Controller
     }
 
    
-    public function update(Request $request, $id)
+    public function update(Request $request, $tag_id)
     {
-        $tag = Auth::user()->tags()->find($id);
+        $tag = Auth::user()->tags()->find($tag_id);
 
         if (is_null($tag)) {
             return response()->json('not found tag', 404);;
@@ -70,9 +70,9 @@ class TagController extends Controller
         return response()->json($tag, 201);
     }
 
-    public function destroy($id)
+    public function destroy($tag_id)
     {
-        $tag = Auth::user()->tags()->find($id);
+        $tag = Auth::user()->tags()->find($tag_id);
         if (is_null($tag)) {
             return response()->json('not found task', 404);;
         }
@@ -81,9 +81,9 @@ class TagController extends Controller
     }
 
     //вывод всех задач данного тега
-    public function tasks($id)
+    public function tasks($tag_id)
     {
-        $tag = Auth::user()->tags()->with('tasks')->find($id);
+        $tag = Auth::user()->tags()->with('tasks')->find($tag_id);
 
         if (is_null($tag)) {
             return response()->json(['error' => 'Tag not found'], 404);
