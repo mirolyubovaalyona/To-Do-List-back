@@ -13,7 +13,7 @@ class TaskController extends Controller
 {
     public function index()
     {
-        $tasks = Auth::user()->tasks()->with('tags')->get();
+        $tasks = Auth::user()->tasks()->with('tags')->cursorPaginate(10);
         return response()->json($tasks);
     }
 
