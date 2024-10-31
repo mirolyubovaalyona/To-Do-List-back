@@ -36,14 +36,14 @@ class SubtaskController extends Controller
         return response()->json($subtask, 201);
     }
 
-    public function show($task_id, $subtask)
+    public function show($task_id, $subtask_id)
     {
         $task = Auth::user()->tasks()->find($task_id);
         if (is_null($task)) {
             return response()->json('not found task', 404);;
         }
 
-        $subtask = $task->subtasks()->find($subtask);
+        $subtask = $task->subtasks()->find($subtask_id);
         if (is_null($subtask)) {
             return response()->json('not found subtask', 404);;
         }
@@ -52,14 +52,14 @@ class SubtaskController extends Controller
     }
 
    
-    public function update(Request $request, $task_id, $subtask)
+    public function update(Request $request, $task_id, $subtask_id)
     {
         $task = Auth::user()->tasks()->find($task_id);
         if (is_null($task)) {
             return response()->json('not found task', 404);;
         }
 
-        $subtask = $task->subtasks()->find($subtask);
+        $subtask = $task->subtasks()->find($subtask_id);
         if (is_null($subtask)) {
             return response()->json('not found subtask', 404);;
         }
@@ -80,14 +80,14 @@ class SubtaskController extends Controller
         return response()->json($subtask, 201);
     }
 
-    public function destroy($task_id, $subtask)
+    public function destroy($task_id, $subtask_id)
     {
         $task = Auth::user()->tasks()->find($task_id);
         if (is_null($task)) {
             return response()->json('not found task', 404);;
         }
 
-        $subtask = $task->subtasks()->find($subtask);
+        $subtask = $task->subtasks()->find($subtask_id);
         if (is_null($subtask)) {
             return response()->json('not found subtask', 404);;
         }

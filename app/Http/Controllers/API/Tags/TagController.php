@@ -11,7 +11,7 @@ class TagController extends Controller
 {
     public function index()
     {
-        return  Auth::user()->tags->cursorPaginate(10);
+        return Auth::user()->tags()->cursorPaginate(10);
     }
 
     public function store(Request $request)
