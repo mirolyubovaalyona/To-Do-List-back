@@ -34,25 +34,17 @@ class TagController extends Controller
         return response()->json($tag, 201);
     }
 
-    public function show($tag_id)
+    public function show(Request $request)
     {
-        $tag = Auth::user()->tags()->find($tag_id);
-
-        if (is_null($tag)) {
-            return response()->json('not found tag', 404);;
-        }
+        $tag = $request->attributes->get('tag');
         return response()->json($tag , 200);
 
     }
 
    
-    public function update(Request $request, $tag_id)
+    public function update(Request $request)
     {
-        $tag = Auth::user()->tags()->find($tag_id);
-
-        if (is_null($tag)) {
-            return response()->json('not found tag', 404);;
-        }
+        $tag = $request->attributes->get('tag');
 
         $validator =  Validator::make($request->all(),[
             'name' => 'sometimes|string|max:255',
@@ -70,25 +62,17 @@ class TagController extends Controller
         return response()->json($tag, 201);
     }
 
-    public function destroy($tag_id)
+    public function destroy(Request $request)
     {
-        $tag = Auth::user()->tags()->find($tag_id);
-        if (is_null($tag)) {
-            return response()->json('not found task', 404);;
-        }
+        $tag = $request->attributes->get('tag');
         $tag->delete();
         return response()->json('sucsess', 200);
     }
 
     //вывод всех задач данного тега
-    public function tasks($tag_id)
+    public function tasks(Request $request)
     {
-        $tag = Auth::user()->tags()->with('tasks')->find($tag_id);
-
-        if (is_null($tag)) {
-            return response()->json(['error' => 'Tag not found'], 404);
-        }
-
+        $tag = $request->attributes->get('tag');
         return response()->json($tag->tasks, 200);
     }
 }

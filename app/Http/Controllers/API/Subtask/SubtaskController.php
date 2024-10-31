@@ -9,18 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class SubtaskController extends Controller
 {
-    public function index($task_id)
+    public function index(Request $request)
     {
-        $task = Auth::user()->tasks()->with('subtasks')->find($task_id);
-
-        if (is_null($task)) {
-            return response()->json(['error' => 'task not found'], 404);
-        }
-
+        $task = $request->attributes->get('task');
         return response()->json($task->subtasks, 200);
     }
 
-    public function store(Request $request, $task_id)
+    public function store(Request $request)
     {
         $validator =  Validator::make($request->all(),[
             'content' => 'required|string|max:255',
@@ -31,38 +26,22 @@ class SubtaskController extends Controller
         }
 
         $validatedData = $validator->validated();
-        $subtask = Auth::user()->tasks()->find($task_id)->subtasks()->create($validatedData);
+        $task = $request->attributes->get('task');
+        $subtask = $task->subtasks()->create($validatedData);
         
         return response()->json($subtask, 201);
     }
 
-    public function show($task_id, $subtask_id)
+    public function show(Request $request)
     {
-        $task = Auth::user()->tasks()->find($task_id);
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
-
-        $subtask = $task->subtasks()->find($subtask_id);
-        if (is_null($subtask)) {
-            return response()->json('not found subtask', 404);;
-        }
-
+        $subtask = $request->attributes->get('subtask');
         return response()->json($subtask , 200);
     }
 
    
-    public function update(Request $request, $task_id, $subtask_id)
+    public function update(Request $request)
     {
-        $task = Auth::user()->tasks()->find($task_id);
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
-
-        $subtask = $task->subtasks()->find($subtask_id);
-        if (is_null($subtask)) {
-            return response()->json('not found subtask', 404);;
-        }
+        $subtask = $request->attributes->get('subtask');
 
         $validator =  Validator::make($request->all(),[
             'content' => 'sometimes|string|max:255',
@@ -80,18 +59,9 @@ class SubtaskController extends Controller
         return response()->json($subtask, 201);
     }
 
-    public function destroy($task_id, $subtask_id)
+    public function destroy(Request $request)
     {
-        $task = Auth::user()->tasks()->find($task_id);
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
-
-        $subtask = $task->subtasks()->find($subtask_id);
-        if (is_null($subtask)) {
-            return response()->json('not found subtask', 404);;
-        }
-
+        $subtask = $request->attributes->get('subtask');
         $subtask->delete();
         return response()->json('sucsess', 200);
     }

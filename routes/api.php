@@ -30,9 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tasks/{task_id}/subtasks', [SubtaskController::class, 'index'])->middleware(CheckTaskOwnership::class);
     Route::post('/tasks/{task_id}/subtasks', [SubtaskController::class, 'store'])->middleware(CheckTaskOwnership::class);
-    Route::get('/tasks/{task_id}/subtasks/{subtask_id}', [SubtaskController::class, 'show'])->middleware(CheckSubtaskOwnership::class);
-    Route::patch('/tasks/{task_id}/subtasks/{subtask_id}', [SubtaskController::class, 'update'])->middleware(CheckSubtaskOwnership::class);
-    Route::delete('/tasks/{task_id}/subtasks/{subtask_id}', [SubtaskController::class, 'destroy'])->middleware(CheckSubtaskOwnership::class);
+    Route::get('/tasks/{task_id}/subtasks/{subtask_id}', [SubtaskController::class, 'show'])->middleware([CheckTaskOwnership::class, CheckSubtaskOwnership::class]);
+    Route::patch('/tasks/{task_id}/subtasks/{subtask_id}', [SubtaskController::class, 'update'])->middleware([CheckTaskOwnership::class, CheckSubtaskOwnership::class]);
+    Route::delete('/tasks/{task_id}/subtasks/{subtask_id}', [SubtaskController::class, 'destroy'])->middleware([CheckTaskOwnership::class, CheckSubtaskOwnership::class]);
 });
 
 

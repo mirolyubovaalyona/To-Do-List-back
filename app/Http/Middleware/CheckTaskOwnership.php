@@ -19,8 +19,10 @@ class CheckTaskOwnership
         $task = Task::find($request->route('task_id'));
 
         if (!$task || $task->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['error' => 'Tasks not found'], 404);
         }
+
+        $request->attributes->set('task', $task);
 
         return $next($request);
     }

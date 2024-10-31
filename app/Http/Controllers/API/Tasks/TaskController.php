@@ -61,25 +61,17 @@ class TaskController extends Controller
         return response()->json($task, 201);
     }
 
-    public function show($task_id)
+    public function show(Request $request, $task_id)
     {
-        $task = Auth::user()->tasks()->with('tags')->find($task_id);
-
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
+        $task = $request->attributes->get('task');
         return response()->json($task , 200);
 
     }
 
    
-    public function update(Request $request, $task_id)
+    public function update(Request $request)
     {
-        $task = Auth::user()->tasks()->find($task_id);
-
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
+        $task = $request->attributes->get('task');
 
         $validator =  Validator::make($request->all(),[
             'name' => 'sometimes|string|max:255',
@@ -131,12 +123,9 @@ class TaskController extends Controller
         return response()->json($task, 201);
     }
 
-    public function destroy($task_id)
+    public function destroy(Request $request, $task_id)
     {
-        $task = Auth::user()->tasks()->find($task_id);
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
+        $task = $request->attributes->get('task');
         $task->delete();
         return response()->json('sucsess', 200);
     }

@@ -19,8 +19,10 @@ class CheckTagOwnership
         $tag = Tag::find($request->route('tag_id'));
 
         if (!$tag || $tag->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['error' => 'Tag found subtask'], 403);
         }
+
+        $request->attributes->set('tag', $tag);
 
         return $next($request);
     }
