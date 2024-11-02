@@ -5,8 +5,6 @@ namespace App\Http\Controllers\API\Tags;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tags\StoreTagRequest;
 use App\Http\Requests\Tags\UpdateTagRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Services\TagService;
 
 class TagController extends Controller

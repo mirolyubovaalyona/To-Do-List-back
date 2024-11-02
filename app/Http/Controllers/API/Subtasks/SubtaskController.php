@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Subtasks\StoreSubtaskRequest;
 use App\Http\Requests\Subtasks\UpdateSubtaskRequest;
 use App\Services\SubtaskService;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class SubtaskController extends Controller
 {
@@ -23,6 +20,11 @@ class SubtaskController extends Controller
         return response()->json($subtasks, 200);
     }
 
+    public function store(StoreSubtaskRequest $request, $taskId)
+    {
+        $subtask = $this->subtaskService->createSubtask($taskId, $request->validated());
+        return response()->json($subtask, 201);
+    }
 
     public function show($taskId, $subtaskId)
     {
