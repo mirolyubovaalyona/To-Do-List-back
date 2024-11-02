@@ -30,7 +30,7 @@ class TaskRepository
 
     public function delete(Task $task)
     {
-        $task->delete();
+        return $task->delete();
     }
 
     public function getTasksByPriority($priority)

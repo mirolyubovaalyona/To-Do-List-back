@@ -35,7 +35,6 @@ class TagController extends Controller
 
     }
 
-   
     public function update(UpdateTagRequest $request, $tagId)
     {
         $tag = $this->tagService->updateTag($tagId, $request->validated());

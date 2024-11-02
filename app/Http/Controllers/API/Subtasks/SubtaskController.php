@@ -5,49 +5,41 @@ namespace App\Http\Controllers\API\Subtasks;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Subtasks\StoreSubtaskRequest;
 use App\Http\Requests\Subtasks\UpdateSubtaskRequest;
+use App\Services\SubtaskService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SubtaskController extends Controller
 {
-    public function index(Request $request)
+    protected $subtaskService;
+    public function __construct(SubtaskService $subtaskService)
     {
-        $task = $request->attributes->get('task');
-        return response()->json($task->subtasks, 200);
+        $this->subtaskService = $subtaskService;
+    }
+    public function index($taskId)
+    {
+        $subtasks = $this->subtaskService->getSubtasksByTaskId($taskId);
+        return response()->json($subtasks, 200);
     }
 
-    public function store(StoreSubtaskRequest $request)
-    {
-        $validatedData = $request->validated();
-        $task = $request->attributes->get('task');
-        $subtask = $task->subtasks()->create($validatedData);
-        
-        return response()->json($subtask, 201);
-    }
 
-    public function show(Request $request)
+    public function show($taskId, $subtaskId)
     {
-        $subtask = $request->attributes->get('subtask');
+        $subtask = $this->subtaskService->findSubtaskById( $subtaskId);
         return response()->json($subtask , 200);
     }
 
    
-    public function update(UpdateSubtaskRequest $request)
+    public function update(UpdateSubtaskRequest $request, $taskId, $subtaskId)
     {
-        $validatedData = $request->validated();
-
-        $subtask = $request->attributes->get('subtask');
-
-        $subtask->update($validatedData);
-   
+        $subtask = $this->subtaskService->updateSubtask($subtaskId, $request->validated());
         return response()->json($subtask, 201);
     }
 
-    public function destroy(Request $request)
+    public function destroy($taskId, $subtaskId)
     {
-        $subtask = $request->attributes->get('subtask');
-        $subtask->delete();
+        $this->subtaskService->deleteSubtask( $subtaskId);
         return response()->json('sucsess', 200);
     }
 }

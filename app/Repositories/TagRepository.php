@@ -30,7 +30,7 @@ class TagRepository
 
     public function delete(Tag $tag)
     {
-        $tag->delete();
+        return $tag->delete();
     }
 
     public function getTasksByTag(Tag $tag)

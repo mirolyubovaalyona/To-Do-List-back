@@ -27,14 +27,12 @@ class TaskController extends Controller
         return response()->json($task, 201);
     }
 
-    public function show( $taskId)
+    public function show($taskId)
     {
         $task = $this->taskService->findTaskById($taskId);
         return response()->json($task , 200);
-
     }
 
-   
     public function update(UpdateTaskRequest $request, $taskId)
     {
         $task = $this->taskService->updateTask( $taskId, $request->validated());
@@ -51,11 +49,6 @@ class TaskController extends Controller
     public function tasksByPriority($priority)
     {
         $tasks = $this->taskService->getTasksByPriority($priority);
-
-        if ($tasks->isEmpty()) {
-            return response()->json(['error' => 'No tasks found with this priority'], 404);
-        }
-
         return response()->json($tasks, 200);
     }
 }
