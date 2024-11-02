@@ -20,7 +20,7 @@ class TaskRepository
 
     public function findById($taskId)
     {
-        return Auth::user()->tasks()->with('tags')->findOrFail($taskId);
+        return Task::with('tags')->findOrFail($taskId);
     }
 
     public function update(Task $task, array $data)

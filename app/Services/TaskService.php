@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Task;
 use App\Repositories\TaskRepository;
 use Illuminate\Support\Carbon;
 
@@ -40,9 +41,15 @@ class TaskService
 
         return $task;
     }
-
-    public function updateTask($task, array $data)
+    public function findTaskById($taskId)
     {
+        return  $this->taskRepository->findById($taskId);
+    }
+
+    public function updateTask($taskId, array $data)
+    {
+        $task = $this->taskRepository->findById($taskId);
+
         $data['type'] = $data['type'] ?? $task->type;
 
         if ($data['type'] === 'due_date') {
@@ -69,5 +76,16 @@ class TaskService
         }
 
         return $task;
+    }
+
+    public function deleteTask($taskId)
+    {
+        $task = $this->taskRepository->findById($taskId);
+        $this->taskRepository->delete($task);
+    }
+
+    public function getTasksByPriority($priority)
+    {
+        return $this->taskRepository->getTasksByPriority($priority);
     }
 }
