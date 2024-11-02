@@ -14,8 +14,7 @@ class TaskRepository
 
     public function create(array $data)
     {
-        $task = Auth::user()->tasks()->create($data);
-        return $task;
+        return Auth::user()->tasks()->create($data);
     }
 
     public function findById($taskId)

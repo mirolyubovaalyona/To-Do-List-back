@@ -7,55 +7,51 @@ use App\Http\Requests\Tags\StoreTagRequest;
 use App\Http\Requests\Tags\UpdateTagRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use App\Services\TagService;
 
 class TagController extends Controller
 {
+    protected $tagService;
+    public function __construct(TagService $tagService)
+    {
+        $this->tagService = $tagService;
+    }
     public function index()
     {
-        return Auth::user()->tags()->cursorPaginate(10);
+        $tags = $this->tagService->getAllTagsPaginated(10);
+        return response()->json($tags);
     }
 
     public function store(StoreTagRequest $request)
     {
-        $validatedData = $request->validated();
-        
-        $tag = Auth::user()->tags()->create($validatedData);
-        
-
+        $tag = $this->tagService->createTag($request->validated());
         return response()->json($tag, 201);
     }
 
-    public function show(Request $request)
+    public function show($tagId)
     {
-        $tag = $request->attributes->get('tag');
+        $tag = $this->tagService->findTagById($tagId);
         return response()->json($tag , 200);
 
     }
 
    
-    public function update(UpdateTagRequest $request)
+    public function update(UpdateTagRequest $request, $tagId)
     {
-        $validatedData = $request->validated();
-
-        $tag = $request->attributes->get('tag');
-
-        $tag->update($validatedData);
-   
+        $tag = $this->tagService->updateTag($tagId, $request->validated());
         return response()->json($tag, 201);
     }
 
-    public function destroy(Request $request)
+    public function destroy($tagId)
     {
-        $tag = $request->attributes->get('tag');
-        $tag->delete();
+        $this->tagService->deleteTag( $tagId);
         return response()->json('sucsess', 200);
     }
 
     //вывод всех задач данного тега
-    public function tasks(Request $request)
+    public function tasks($tagId)
     {
-        $tag = $request->attributes->get('tag');
-        return response()->json($tag->tasks, 200);
+        $tasks = $this->tagService->getTasksByTag($tagId);
+        return response()->json($tasks, 200);
     }
 }

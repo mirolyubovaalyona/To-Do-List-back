@@ -5,11 +5,6 @@ namespace App\Http\Controllers\API\Tasks;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
-use App\Models\Task;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Validator;
 use App\Services\TaskService;
 
 class TaskController extends Controller
