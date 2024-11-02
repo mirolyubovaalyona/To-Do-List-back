@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\Tags;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tags\StoreTagRequest;
+use App\Http\Requests\Tags\UpdateTagRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -14,19 +16,9 @@ class TagController extends Controller
         return Auth::user()->tags()->cursorPaginate(10);
     }
 
-    public function store(Request $request)
+    public function store(StoreTagRequest $request)
     {
-        $validator =  Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'color' => ['nullable', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-        ]);
-
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-
-        $validatedData = $validator->validated();
+        $validatedData = $request->validated();
         
         $tag = Auth::user()->tags()->create($validatedData);
         
@@ -42,20 +34,11 @@ class TagController extends Controller
     }
 
    
-    public function update(Request $request)
+    public function update(UpdateTagRequest $request)
     {
+        $validatedData = $request->validated();
+
         $tag = $request->attributes->get('tag');
-
-        $validator =  Validator::make($request->all(),[
-            'name' => 'sometimes|string|max:255',
-            'color' => ['sometimes', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-        ]);
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-        
-        $validatedData = $validator->validated();
 
         $tag->update($validatedData);
    

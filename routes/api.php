@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\Subtask\SubtaskController;
+use App\Http\Controllers\API\Subtasks\SubtaskController;
 use App\Http\Controllers\API\Tags\TagController;
 use App\Http\Controllers\API\Tasks\TaskController;
 use App\Http\Middleware\CheckSubtaskOwnership;

@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\API\Subtask;
+namespace App\Http\Controllers\API\Subtasks;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Subtasks\StoreSubtaskRequest;
+use App\Http\Requests\Subtasks\UpdateSubtaskRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,17 +17,9 @@ class SubtaskController extends Controller
         return response()->json($task->subtasks, 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreSubtaskRequest $request)
     {
-        $validator =  Validator::make($request->all(),[
-            'content' => 'required|string|max:255',
-        ]);
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-
-        $validatedData = $validator->validated();
+        $validatedData = $request->validated();
         $task = $request->attributes->get('task');
         $subtask = $task->subtasks()->create($validatedData);
         
@@ -39,20 +33,11 @@ class SubtaskController extends Controller
     }
 
    
-    public function update(Request $request)
+    public function update(UpdateSubtaskRequest $request)
     {
+        $validatedData = $request->validated();
+
         $subtask = $request->attributes->get('subtask');
-
-        $validator =  Validator::make($request->all(),[
-            'content' => 'sometimes|string|max:255',
-            'is_completed' => 'sometimes|integer|min:0|max:1',
-        ]);
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-        
-        $validatedData = $validator->validated();
 
         $subtask->update($validatedData);
    

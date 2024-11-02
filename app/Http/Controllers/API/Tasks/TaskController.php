@@ -3,44 +3,32 @@
 namespace App\Http\Controllers\API\Tasks;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tasks\StoreTaskRequest;
+use App\Http\Requests\Tasks\UpdateTaskRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Task;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Services\TaskService;
 
 class TaskController extends Controller
 {
+    protected $taskService;
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
+
     public function index()
     {
         $tasks = Auth::user()->tasks()->with('tags')->cursorPaginate(10);
         return response()->json($tasks);
     }
 
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        $validator =  Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'priority' => 'nullable|integer|min:0|max:10',
-            'type' => 'nullable|in:due_date,date_range,weekly,daily',
-            'due_date' => 'nullable|date|after_or_equal:today|prohibited_unless:type,due_date',
-            'start_date' => 'nullable|date|after_or_equal:today|before_or_equal:end_date|prohibited_unless:type,date_range',
-            'end_date' => 'nullable|date|after_or_equal:today|after_or_equal:start_date|prohibited_unless:type,date_range',
-            'days_of_week' => 'nullable|json|prohibited_unless:type,weekly',
-            'time' => 'nullable|date_format:H:i',
-            'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id',
-        ]);
+        $validatedData = $request->validated();
 
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-
-        $validatedData = $validator->validated();
-
-        
         $validatedData['type'] = $validatedData['type'] ?? 'due_date';
         
         if ($validatedData['type'] === 'due_date') {
@@ -69,30 +57,11 @@ class TaskController extends Controller
     }
 
    
-    public function update(Request $request)
+    public function update(UpdateTaskRequest $request)
     {
-        $task = $request->attributes->get('task');
-
-        $validator =  Validator::make($request->all(),[
-            'name' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            'priority' => 'sometimes|integer|min:0|max:10',
-            'type' => 'sometimes|in:due_date,date_range,weekly,daily',
-            'due_date' => 'sometimes|date|after_or_equal:today',
-            'start_date' => 'sometimes|date|after_or_equal:today|before_or_equal:end_date',
-            'end_date' => 'sometimes|date|after_or_equal:today|after_or_equal:start_date',
-            'days_of_week' => 'sometimes|json',
-            'time' => 'sometimes|date_format:H:i',
-            'tags' => 'sometimes|array',
-            'tags.*' => 'exists:tags,id',
-            'is_completed' => 'sometimes|integer|min:0|max:1',
-        ]);
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
+        $validatedData = $request->validated();
         
-        $validatedData = $validator->validated();
+        $task = $request->attributes->get('task');
 
         $validatedData['type'] = $validatedData['type'] ?? $task['type'];
 
