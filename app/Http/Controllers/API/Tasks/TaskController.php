@@ -51,4 +51,11 @@ class TaskController extends Controller
         $tasks = $this->taskService->getTasksByPriority($priority);
         return response()->json($tasks, 200);
     }
+
+    //измененние статуса задачи на - завершенна 
+    public function taskСompletion($taskId)
+    {
+        $task = $this->taskService->taskCompleted($taskId);
+        return response()->json($task , 201);
+    }
 }

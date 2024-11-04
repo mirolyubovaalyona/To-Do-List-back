@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Task;
 use App\Repositories\TaskRepository;
 use Illuminate\Support\Carbon;
+use App\Services\SubtaskService;
 
 class TaskService
 {
@@ -87,5 +87,20 @@ class TaskService
     public function getTasksByPriority($priority)
     {
         return $this->taskRepository->getTasksByPriority($priority);
+    }
+
+    public function taskCompleted($taskId)
+    {
+        $task = $this->taskRepository->findById($taskId);
+        if ($task) {
+            $task->is_completed = true;
+            $task->save();
+            $subtasks = $task->subtasks()->get();
+            foreach ($subtasks as $subtask) {
+                $subtask->is_completed = true;
+                $subtask->save();
+            }
+        }
+        return  $task;
     }
 }

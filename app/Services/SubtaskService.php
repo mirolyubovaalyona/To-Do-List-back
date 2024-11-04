@@ -44,4 +44,34 @@ class SubtaskService
         $subtask = $this->subtaskRepository->findById($subtaskId);
         return $this->subtaskRepository->delete($subtask);
     }
+
+    public function subtaskCompleted($taskId, $subtaskId)
+    {
+        $subtask = $this->subtaskRepository->findById($subtaskId);
+        if ($subtask) {
+            $subtask->is_completed = true;
+            $subtask->save();
+            if ($this->areAllSubtasksCompleted($taskId)) {
+                $this->taskService->taskCompleted($taskId);
+            }
+        }
+        return  $subtask;
+    }
+
+    public function areAllSubtasksCompleted($taskId)
+    {
+        $task = $this->taskService->findTaskById($taskId);
+        $subtasks = $task->subtasks()->get();
+        return $subtasks->every(fn($subtask) => $subtask->is_completed);
+    }
+
+    public function markAllSubtasksAsCompleted($taskId)
+    {
+        $task = $this->taskService->findTaskById($taskId);
+        $subtasks = $task->subtasks()->get();
+        foreach ($subtasks as $subtask) {
+            $subtask->is_completed = true;
+            $subtask->save();
+        }
+    }
 }

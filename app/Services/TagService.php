@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Tag;
 use App\Repositories\TagRepository;
-use Illuminate\Support\Carbon;
 
 class TagService
 {

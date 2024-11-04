@@ -33,7 +33,6 @@ class UpdateTaskRequest extends FormRequest
             'time' => 'sometimes|date_format:H:i',
             'tags' => 'sometimes|array',
             'tags.*' => 'exists:tags,id',
-            'is_completed' => 'sometimes|integer|min:0|max:1',
         ];
     }
 }

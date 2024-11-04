@@ -23,7 +23,6 @@ class UpdateSubtaskRequest extends FormRequest
     {
         return [
             'content' => 'sometimes|string|max:255',
-            'is_completed' => 'sometimes|integer|min:0|max:1',
         ];
     }
 }

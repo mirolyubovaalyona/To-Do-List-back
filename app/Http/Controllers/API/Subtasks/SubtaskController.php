@@ -44,4 +44,10 @@ class SubtaskController extends Controller
         $this->subtaskService->deleteSubtask( $subtaskId);
         return response()->json('sucsess', 200);
     }
+
+    public function subtaskСompletion($taskId, $subtaskId)
+    {
+        $subtask = $this->subtaskService->subtaskCompleted($taskId, $subtaskId);
+        return response()->json($subtask , 201);
+    }
 }
