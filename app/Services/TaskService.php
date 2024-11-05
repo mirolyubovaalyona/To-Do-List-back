@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\TaskRepository;
 use Illuminate\Support\Carbon;
-use App\Services\SubtaskService;
 
 class TaskService
 {
@@ -103,4 +102,23 @@ class TaskService
         }
         return  $task;
     }
+
+     // Метод для проверки и обновления задач с истекшими сроками
+     public function markExpiredTasksAsFailed()
+     {
+         // Получаем сегодняшнюю дату
+         $today = Carbon::today();
+ 
+         // Получаем задачи, срок которых истёк, но они еще не отмечены как проваленные
+         $expiredTasks = $this->taskRepository->getExpiredTasks($today);
+ 
+         // Отмечаем каждую задачу как проваленную
+         foreach ($expiredTasks as $task) {
+             $task->is_failed = true;
+             $task->save();
+         }
+ 
+         // Возвращаем количество обновленных задач для логов
+         return count($expiredTasks);
+     }
 }
