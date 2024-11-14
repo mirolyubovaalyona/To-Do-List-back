@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tags\StoreTagRequest;
 use App\Http\Requests\Tags\UpdateTagRequest;
 use App\Services\TagService;
+use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
@@ -14,9 +15,10 @@ class TagController extends Controller
     {
         $this->tagService = $tagService;
     }
-    public function index()
+    public function index(Request $request)
     {
-        $tags = $this->tagService->getAllTagsPaginated(10);
+        $perPage = $request->query('per_page', 10);
+        $tags = $this->tagService->getAllTagsPaginated($perPage);
         return response()->json($tags);
     }
 

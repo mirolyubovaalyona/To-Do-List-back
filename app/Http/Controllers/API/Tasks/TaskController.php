@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Services\TaskService;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
@@ -15,9 +16,10 @@ class TaskController extends Controller
         $this->taskService = $taskService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = $this->taskService->getAllTasksPaginated(10);
+        $perPage = $request->query('per_page', 10);
+        $tasks = $this->taskService->getAllTasksPaginated($perPage);
         return response()->json($tasks);
     }
 
