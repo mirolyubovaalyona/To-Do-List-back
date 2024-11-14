@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Tasks;
 
+use App\Rules\ValidDaysOfWeek;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTaskRequest extends FormRequest
@@ -29,7 +30,7 @@ class UpdateTaskRequest extends FormRequest
             'due_date' => 'sometimes|date|after_or_equal:today',
             'start_date' => 'sometimes|date|after_or_equal:today|before_or_equal:end_date',
             'end_date' => 'sometimes|date|after_or_equal:today|after_or_equal:start_date',
-            'days_of_week' => 'sometimes|json',
+            'days_of_week' => ['sometimes', new ValidDaysOfWeek()],,
             'time' => 'sometimes|date_format:H:i',
             'tags' => 'sometimes|array',
             'tags.*' => 'exists:tags,id',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Tasks;
 
+use App\Rules\ValidDaysOfWeek;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTaskRequest extends FormRequest
@@ -29,7 +30,7 @@ class StoreTaskRequest extends FormRequest
             'due_date' => 'nullable|date|after_or_equal:today|prohibited_unless:type,due_date',
             'start_date' => 'nullable|date|after_or_equal:today|before_or_equal:end_date|prohibited_unless:type,date_range',
             'end_date' => 'nullable|date|after_or_equal:today|after_or_equal:start_date|prohibited_unless:type,date_range',
-            'days_of_week' => 'nullable|json|prohibited_unless:type,weekly',
+            'days_of_week' => ['nullable', new ValidDaysOfWeek()],
             'time' => 'nullable|date_format:H:i',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id',
