@@ -3,153 +3,61 @@
 namespace App\Http\Controllers\API\Tasks;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tasks\StoreTaskRequest;
+use App\Http\Requests\Tasks\UpdateTaskRequest;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Task;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
-    public function index()
+    protected $taskService;
+    public function __construct(TaskService $taskService)
     {
-        $tasks = Auth::user()->tasks()->with('tags')->cursorPaginate(10);
+        $this->taskService = $taskService;
+    }
+
+    public function index(Request $request)
+    {
+        $perPage = $request->query('per_page', 10);
+        $tasks = $this->taskService->getAllTasksPaginated($perPage);
         return response()->json($tasks);
     }
 
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        $validator =  Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'priority' => 'nullable|integer|min:0|max:10',
-            'type' => 'nullable|in:due_date,date_range,weekly,daily',
-            'due_date' => 'nullable|date|after_or_equal:today|prohibited_unless:type,due_date',
-            'start_date' => 'nullable|date|after_or_equal:today|before_or_equal:end_date|prohibited_unless:type,date_range',
-            'end_date' => 'nullable|date|after_or_equal:today|after_or_equal:start_date|prohibited_unless:type,date_range',
-            'days_of_week' => 'nullable|json|prohibited_unless:type,weekly',
-            'time' => 'nullable|date_format:H:i',
-            'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id',
-        ]);
-
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-
-        $validatedData = $validator->validated();
-
-        
-        $validatedData['type'] = $validatedData['type'] ?? 'due_date';
-        
-        if ($validatedData['type'] === 'due_date') {
-            $validatedData['due_date'] = $validatedData['due_date'] ?? Carbon::today();
-        } elseif ($validatedData['type'] === 'date_range') {
-            $validatedData['start_date'] = $validatedData['start_date'] ?? Carbon::today();
-            $validatedData['end_date'] = $validatedData['end_date'] ?? Carbon::today();
-        }elseif  ($validatedData['type'] === 'weekly') {
-            $validatedData['days_of_week'] = $validatedData['days_of_week'] ?? json_encode(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
-        }
-        
-        $task = Auth::user()->tasks()->create($validatedData);
-        
-        if (isset($validatedData['tags'])) {
-            $task->tags()->sync($validatedData['tags']);
-        }
-
+        $task = $this->taskService->createTask($request->validated());
         return response()->json($task, 201);
     }
 
-    public function show($task_id)
+    public function show($taskId)
     {
-        $task = Auth::user()->tasks()->with('tags')->find($task_id);
-
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
+        $task = $this->taskService->findTaskById($taskId);
         return response()->json($task , 200);
-
     }
 
-   
-    public function update(Request $request, $task_id)
+    public function update(UpdateTaskRequest $request, $taskId)
     {
-        $task = Auth::user()->tasks()->find($task_id);
-
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
-
-        $validator =  Validator::make($request->all(),[
-            'name' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            'priority' => 'sometimes|integer|min:0|max:10',
-            'type' => 'sometimes|in:due_date,date_range,weekly,daily',
-            'due_date' => 'sometimes|date|after_or_equal:today',
-            'start_date' => 'sometimes|date|after_or_equal:today|before_or_equal:end_date',
-            'end_date' => 'sometimes|date|after_or_equal:today|after_or_equal:start_date',
-            'days_of_week' => 'sometimes|json',
-            'time' => 'sometimes|date_format:H:i',
-            'tags' => 'sometimes|array',
-            'tags.*' => 'exists:tags,id',
-            'is_completed' => 'sometimes|integer|min:0|max:1',
-        ]);
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-        
-        $validatedData = $validator->validated();
-
-        $validatedData['type'] = $validatedData['type'] ?? $task['type'];
-
-
-        if ($validatedData['type'] === 'due_date') {
-            $validatedData['due_date'] = $validatedData['due_date'] ?? Carbon::today();
-            $validatedData['start_date'] = null;
-            $validatedData['end_date'] = null;
-            $validatedData['days_of_week'] = null;
-        } elseif ($validatedData['type'] === 'date_range') {
-            $validatedData['start_date'] = $validatedData['start_date'] ?? Carbon::today();
-            $validatedData['end_date'] = $validatedData['end_date'] ?? Carbon::today();
-            $validatedData['due_date'] = null;
-            $validatedData['days_of_week'] = null;
-        }elseif ($validatedData['type'] === 'weekly') {
-            $validatedData['days_of_week'] = $validatedData['days_of_week'] ?? json_encode(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
-            $validatedData['due_date'] = null;
-            $validatedData['start_date'] = null;
-            $validatedData['end_date'] = null;
-        }
-
-        $task->update($validatedData);
-
-        if (isset($validatedData['tags'])) {
-            $task->tags()->sync($validatedData['tags']);
-        }
-   
+        $task = $this->taskService->updateTask( $taskId, $request->validated());
         return response()->json($task, 201);
     }
 
-    public function destroy($task_id)
+    public function destroy($taskId)
     {
-        $task = Auth::user()->tasks()->find($task_id);
-        if (is_null($task)) {
-            return response()->json('not found task', 404);;
-        }
-        $task->delete();
+        $this->taskService->deleteTask( $taskId);
         return response()->json('sucsess', 200);
     }
 
      // Получить все задачи с данным приоритетом 
     public function tasksByPriority($priority)
     {
-        $tasks = Auth::user()->tasks()->where('priority', $priority)->with('tags')->get();
-
-        if ($tasks->isEmpty()) {
-            return response()->json(['error' => 'No tasks found with this priority'], 404);
-        }
-
+        $tasks = $this->taskService->getTasksByPriority($priority);
         return response()->json($tasks, 200);
+    }
+
+    //измененние статуса задачи на - завершенна 
+    public function taskСompletion($taskId)
+    {
+        $task = $this->taskService->taskCompleted($taskId);
+        return response()->json($task , 201);
     }
 }

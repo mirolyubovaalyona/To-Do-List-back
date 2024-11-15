@@ -3,92 +3,54 @@
 namespace App\Http\Controllers\API\Tags;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tags\StoreTagRequest;
+use App\Http\Requests\Tags\UpdateTagRequest;
+use App\Services\TagService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class TagController extends Controller
 {
-    public function index()
+    protected $tagService;
+    public function __construct(TagService $tagService)
     {
-        return  Auth::user()->tags->cursorPaginate(10);
+        $this->tagService = $tagService;
+    }
+    public function index(Request $request)
+    {
+        $perPage = $request->query('per_page', 10);
+        $tags = $this->tagService->getAllTagsPaginated($perPage);
+        return response()->json($tags);
     }
 
-    public function store(Request $request)
+    public function store(StoreTagRequest $request)
     {
-        $validator =  Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'color' => ['nullable', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-        ]);
-
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-
-        $validatedData = $validator->validated();
-        
-        $tag = Auth::user()->tags()->create($validatedData);
-        
-
+        $tag = $this->tagService->createTag($request->validated());
         return response()->json($tag, 201);
     }
 
-    public function show($tag_id)
+    public function show($tagId)
     {
-        $tag = Auth::user()->tags()->find($tag_id);
-
-        if (is_null($tag)) {
-            return response()->json('not found tag', 404);;
-        }
+        $tag = $this->tagService->findTagById($tagId);
         return response()->json($tag , 200);
 
     }
 
-   
-    public function update(Request $request, $tag_id)
+    public function update(UpdateTagRequest $request, $tagId)
     {
-        $tag = Auth::user()->tags()->find($tag_id);
-
-        if (is_null($tag)) {
-            return response()->json('not found tag', 404);;
-        }
-
-        $validator =  Validator::make($request->all(),[
-            'name' => 'sometimes|string|max:255',
-            'color' => ['sometimes', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-        ]);
-
-        if($validator->fails()){
-            return  response()->json(['Validation Error.', $validator->errors()]);    
-        }
-        
-        $validatedData = $validator->validated();
-
-        $tag->update($validatedData);
-   
+        $tag = $this->tagService->updateTag($tagId, $request->validated());
         return response()->json($tag, 201);
     }
 
-    public function destroy($tag_id)
+    public function destroy($tagId)
     {
-        $tag = Auth::user()->tags()->find($tag_id);
-        if (is_null($tag)) {
-            return response()->json('not found task', 404);;
-        }
-        $tag->delete();
+        $this->tagService->deleteTag( $tagId);
         return response()->json('sucsess', 200);
     }
 
     //вывод всех задач данного тега
-    public function tasks($tag_id)
+    public function tasks($tagId)
     {
-        $tag = Auth::user()->tags()->with('tasks')->find($tag_id);
-
-        if (is_null($tag)) {
-            return response()->json(['error' => 'Tag not found'], 404);
-        }
-
-        return response()->json($tag->tasks, 200);
+        $tasks = $this->tagService->getTasksByTag($tagId);
+        return response()->json($tasks, 200);
     }
 }

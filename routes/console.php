@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Console\Commands\CheckExpiredTasks;
+use App\Console\Commands\DeleteCompletedTasks;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+Schedule::command(CheckExpiredTasks::class)->everyMinute();
+Schedule::command(DeleteCompletedTasks::class)->everyMinute();

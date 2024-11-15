@@ -23,7 +23,8 @@ return new class extends Migration
             $table->date('end_date')->nullable(); 
             $table->json('days_of_week')->nullable(); 
             $table->timeTz('time')->nullable(); 
-            $table->boolean('is_completed')->default(0);;
+            $table->boolean('is_completed')->default(0);
+            $table->boolean('is_failed')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
