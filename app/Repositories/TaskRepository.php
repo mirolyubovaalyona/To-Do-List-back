@@ -61,4 +61,9 @@ class TaskRepository
         ->where('is_completed', false)
         ->get();
     }
+
+    public function deleteCompletedTasks()
+    {
+        return Task::where('is_completed', true)->delete();
+    }
 }

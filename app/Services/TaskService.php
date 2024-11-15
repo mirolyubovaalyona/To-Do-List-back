@@ -121,4 +121,9 @@ class TaskService
          // Возвращаем количество обновленных задач для логов
          return count($expiredTasks);
      }
+
+      public function deleteCompletedTasks()
+      {
+        return $this->taskRepository->deleteCompletedTasks();
+      }
 }
