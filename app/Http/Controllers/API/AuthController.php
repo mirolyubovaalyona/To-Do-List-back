@@ -51,6 +51,8 @@ class AuthController extends Controller
             ], 401);
         }
 
+        session()->regenerate();
+
         $token = $request->user()->createToken('authToken')->plainTextToken;
 
         return response()->json(['token' => $token], 200);
@@ -58,7 +60,13 @@ class AuthController extends Controller
 
     function logout(Request $request) {
         
+        auth()->guard('web')->logout();
+
         $request->user()->tokens()->delete();
+
+        session()->invalidate();
+
+        session()->regenerateToken();
 
         return response()->json(['message' => 'Logged out successfully']);
     }
