@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Subtasks\SubtaskController;
 use App\Http\Controllers\API\Tags\TagController;
 use App\Http\Controllers\API\Tasks\TaskController;
@@ -10,7 +10,7 @@ use App\Http\Middleware\CheckTaskOwnership;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use App\Http\Controllers\API\VerifyEmailController;
+use App\Http\Controllers\API\Auth\VerifyEmailController;
 
 // Auth Routes
 Route::post('/register', [AuthController::class, 'register']);
