@@ -9,14 +9,28 @@ use App\Http\Middleware\CheckTagOwnership;
 use App\Http\Middleware\CheckTaskOwnership;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\API\VerifyEmailController;
 
 // Auth Routes
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+//маршрут ссылки верификации имейла
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+    ->middleware(['auth:sanctum', 'signed'])
+    ->name('verification.verify');
+    
+//маршрут для повторной отправки верификационного письма
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
 
-Route::middleware('auth:sanctum')->group(function () {
+    return response()->json(['message' => 'Verification email sent.']);
+})->middleware(['auth:sanctum', 'throttle:6,1']);
+
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // User Route
     Route::get('/user', fn(Request $request) => $request->user());
 

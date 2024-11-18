@@ -20,12 +20,8 @@ class AuthController extends Controller
             
         ]);
 
-        if($validator->fails()){
-            return response()->json([
-                'status' => '0',
-                'massage' => 'fail',
-                'data' => $validator ->errors()->all()
-            ], 401);      
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
         $user = User::create([
@@ -34,7 +30,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json($user, 201);
+        $user->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'User registered. Please check your email to verify your account.'], 201);
     }
 
     function login(Request $request) {
