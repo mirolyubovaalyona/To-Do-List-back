@@ -31,8 +31,12 @@ class AuthController extends Controller
         ]);
 
         $user->sendEmailVerificationNotification();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['message' => 'User registered. Please check your email to verify your account.'], 201);
+        return response()->json([
+            'message' => 'User registered successfully. Please verify your email.',
+            'token' => $token,
+        ], 201);
     }
 
     function login(Request $request) {

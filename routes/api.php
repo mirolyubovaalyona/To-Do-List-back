@@ -19,13 +19,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 //маршрут ссылки верификации имейла
 Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
-    ->middleware(['auth:sanctum', 'signed'])
+    ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
     ->name('verification.verify');
     
 //маршрут для повторной отправки верификационного письма
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
-
     return response()->json(['message' => 'Verification email sent.']);
 })->middleware(['auth:sanctum', 'throttle:6,1']);
 
